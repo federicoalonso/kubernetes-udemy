@@ -31,6 +31,10 @@ kubectl delete -f pod.yaml
 kubectl get pods
 kubectl get pods --all-namespaces
 kubectl get pods -n default # del namespace default
+kubectl get pods -l env=prod
+
+## Agregar label a un pod
+kubectl label pods podtest env=prod
 
 ## Ver con detalles
 kubectl get pods -o wide

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: podtest2
+  labels: #son arbritarios, puedo poner los que quiera
+    app: front
+    env: dev
+spec:
+  containers:
+    - name: web
+      image: nginx:alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: podtest3
+  labels:
+    app: backend
+    env: dev
+spec:
+  containers:
+    - name: web
+      image: nginx:alpine
