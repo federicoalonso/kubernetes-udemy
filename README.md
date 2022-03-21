@@ -66,3 +66,21 @@ apk add -U curl
 ## Cambiar a otro namespace
 kubectl config set-context --current --namespace=<namespace>
 ```
+
+### Con respecto a los deployments
+```bash
+## Ver los deployments
+kubectl get deployments
+
+## Ver como fue ejecutado un deployment- si los cambios se estan realizando se muestra en tiempo real
+kubectl rollout status deployment deployment-test
+
+## Ver la historia de un deployment
+kubectl rollout history deployment deployment-test
+
+## Ver un cambio en particular
+kubectl rollout history deployment deployment-test --revision=4
+
+## Volver a una revision anterior
+kubectl rollout undo deployment deployment-test --to-revision=6
+```
