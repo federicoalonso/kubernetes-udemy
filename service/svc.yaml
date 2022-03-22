@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-test
+  labels:
+    app: front
+  annotations:
+    kubernetes.io/change-cause: "Inicio"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: front
+  template:
+    metadata:
+      labels:
+        app: front
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mi-servicio
+  labels:
+    app: front
+spec:
+  type: NodePort # LoadBalancer, NodePort, ClusterIP, ExternalName
+  selector:
+    app: front
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80 # a que puerto dentro del port voy a consumir
+
+# ClusterIP es para un servicio interno, no se expone.
+# LoadBalancer El master se comporta como balanceador y manda peticiones a el servicio expuesto en alguno de los nodos.
+# NodePort expone un puerto del nodo para que el usuario pueda entrar.
+# ExternalName
+
+## Varios Puertos
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: mi-servicio
+# spec:
+#   selector:
+#     app: MiApp
+#   ports:
+#     - name: http
+#       protocol: TCP
+#       port: 80
+#       targetPort: 9376
+#     - name: https
+#       protocol: TCP
+#       port: 443
+#       targetPort: 9377
