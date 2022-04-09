@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-k8s-hands-on
+  labels:
+    app: frontend
+  annotations:
+    kubernetes.io/change-cause: "Inicio"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: registry.gitlab.com/federicoalonso/k8s-udemy:frontend5
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-k8s-hands-on
+  labels:
+    app: frontend
+spec:
+  type: NodePort # LoadBalancer, NodePort, ClusterIP, ExternalName
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80

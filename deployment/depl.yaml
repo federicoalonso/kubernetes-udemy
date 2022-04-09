@@ -19,6 +19,6 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: nginx:alpne
+        image: nginx:alpine
         ports:
         - containerPort: 29
