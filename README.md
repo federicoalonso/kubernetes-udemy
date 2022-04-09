@@ -188,3 +188,76 @@ Events:            <none>
 - **ClusterIP** es el mas usado, es una ip virtual, permanente en el tiempo que kubernetes le asigna al servicio. Es interna, no se puede acceder desde internet.
 - **NodePort** expone un puerto a nivel del nodo y permite el ingreso desde fuera del cluster.
 - **LoadBalancer** el master se comporta como balanceador y manda peticiones a el servicio expuesto en alguno de los nodos.
+
+### Con respecto a los namespaces
+```bash
+## Ver los namespaces
+kubectl get namespaces
+
+## Dns en los namespaces: svcName + namespace + svc.cluster.local
+curl backend-svc.default.svc.cluster.local
+
+## cambiar de contexto
+kubectl config set-context --current --namespace=<namespace>
+```
+
+### Limitar los recursos de los pods
+
+Puedo limitar bytes y cpu
+
+Tenemos dos opciones:
+
+* Requests -> Lo que pongamos aca kubernetes se encarga de garantizar dicho limite, se los da dedicados, ej 20Mb de memoria
+* Limits ->  Si ponemos 30Mb, son 10 mas que el anterior, la diferencia es que no los garantiza, depende del estado del nodo. Si el pod sobrepasa los 30 Mb, kubernetes lo reinicia o lo elimina. Cuando supera un limite de cpu no se elimina el pod, sino que se le da solo el limite.
+
+```bash
+## Ver los recursos del nodo
+kubectl describe node <nodename>
+```
+* LimitRange son objetos que nos permiten poner un limite a los recursos de los pods, por ejemplo, en un determinado namespace, mientras que un resourceQuota nos permite limitar los recursos de todos los objetos de un namespace.
+* Cuando creamos un resourceQuota, si o si debemos definir en los contenedores el limite que queremos, si no, no se aplica.
+
+
+### Los Probes
+
+Los probes son pruebas de vida del contenedor o de que estan listos, la accion la realiza kubelet, y lo puede realizar de 3 formas: 
+
+* Mediante comando
+* Mediante la inspeccion a un puerto TCP
+* Mediante HTTP
+
+Exitesn 3 metodologias:
+
+1. LivenessProbe: Comando que ejecuta kubelete en el contenedor cada x intervalo de tiempo, si no da bien el contenedor es reiniciado.
+2. ReadinessProbe: Es un diagnostico que se le hace al pod cuando se crea para verificar que esta listo para recibir peticiones del servicio, si da negativo no lo reinicia, lo desregistra de los servicios para que no reciba mas carga.
+3. StartupProbe: Si el startup esta definido, el readiness y el liveness no se van a ejecutar hasta que el startup de correcto, sirve para aplicaciones que tardan en iniciarse.
+
+### Config Maps
+
+```bash
+# Cargar desde un archivo
+kubectl create configmap nginx-cm --from-file=config-maps/nginx.conf
+
+# Ver los configmaps
+kubectl get configmaps
+
+# Describir el configmap
+kubectl describe configmap nginx-cm
+
+# Todos los archivos de un directorio
+kubectl create configmap nginx-cm --from-file=config-maps/
+```
+
+### Secrets
+
+```bash
+# Cargar desde un archivo
+kubectl create secret generic nginx-secret --from-file=secrets-files/test.txt
+
+# Ver los secrets
+kubectl get secrets
+
+# Cambiar variables de entorno
+# Cambia las variables de un archivo por variables de la shell y lo saco a otro archivo: export USER=usuario && export PASSWORD=password
+envsubst < secreto-vars.yaml > secreto-vars-out.yaml && kubectl apply -f secreto-vars-out.yaml
+```
